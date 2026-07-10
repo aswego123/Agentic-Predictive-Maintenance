@@ -1,0 +1,20 @@
+# Secrets — never commit these
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+
+# SQLite persistence written by the graph
+sqlite-data/*.sqlite
+sqlite-data/*.sqlite-shm
+sqlite-data/*.sqlite-wal
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

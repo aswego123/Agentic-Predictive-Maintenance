@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Predictive Maintenance — Agentic Architecture (Updated)</title>
+<style>
+  :root{
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+  }
+  body{
+    background:#0b0d12;
+    margin:0;
+    padding:40px 20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:#e5e7eb;
+  }
+  h1{
+    font-size:20px;
+    font-weight:600;
+    color:#f9fafb;
+    margin:0 0 4px 0;
+  }
+  .sub{
+    color:#9ca3af;
+    font-size:13px;
+    margin-bottom:28px;
+  }
+  .canvas-wrap{
+    position:relative;
+    width:1040px;
+    background:#ffffff;
+    border-radius:14px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    overflow:visible;
+  }
+  .canvas{
+    position:relative;
+    width:1040px;
+    height:1620px;
+  }
+  .box{
+    position:absolute;
+    border-radius:10px;
+    border:2px solid;
+    box-sizing:border-box;
+    padding:10px 14px;
+    font-size:13px;
+    line-height:1.35;
+  }
+  .box .title{
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:2px;
+  }
+  .box .sub-title{
+    font-size:11px;
+    font-style:italic;
+    opacity:0.85;
+    margin-bottom:4px;
+  }
+  .box ul{
+    margin:4px 0 0 16px;
+    padding:0;
+  }
+  .box li{ margin-bottom:1px; }
+
+  .dashboard{ background:#dbeafe; border-color:#93c5fd; color:#1e3a8a; }
+  .orchestrator{ background:#e0e7ff; border-color:#a5b4fc; color:#4338ca; text-align:center;}
+  .ingestion{ background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+  .simlayer{ background:#fef3c7; border-color:#f59e0b; color:#92400e; }
+  .physics{ background:#fee2e2; border-color:#fca5a5; color:#991b1b; }
+  .mlcorrect{ background:#d1fae5; border-color:#6ee7b7; color:#065f46; }
+  .judge{ background:#ede9fe; border-color:#c4b5fd; color:#5b21b6; }
+  .agree{ background:#ccfbf1; border-color:#5eead4; color:#115e59; }
+  .calib{ background:#ccfbf1; border-color:#5eead4; color:#115e59; }
+  .approval{ background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+  .action{ background:#dbeafe; border-color:#93c5fd; color:#1e3a8a; }
+  .mro{ background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+
+  svg{ position:absolute; top:0; left:0; pointer-events:none; }
+
+  .edge-label{
+    position:absolute;
+    font-size:10.5px;
+    background:#ffffffee;
+    padding:1px 5px;
+    border-radius:4px;
+    color:#374151;
+    font-weight:600;
+  }
+  .edge-label.new{
+    color:#ffffff;
+    border-radius:5px;
+    padding:2px 7px;
+    font-weight:700;
+  }
+  .badge{
+    position:absolute;
+    font-size:9.5px;
+    background:#111827;
+    color:#fff;
+    padding:2px 6px;
+    border-radius:10px;
+    font-weight:700;
+    letter-spacing:0.3px;
+  }
+  .legend{
+    position:absolute;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    padding:14px 18px;
+  }
+  .legend h3{
+    margin:0 0 10px 0;
+    font-size:13px;
+    color:#111827;
+  }
+  .legend-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:11.5px;
+    color:#374151;
+    margin-bottom:8px;
+  }
+  .swatch{
+    width:26px;
+    height:0;
+    border-top-width:3px;
+    border-top-style:dashed;
+    flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+
+<h1>AI-Driven Predictive Maintenance — Agentic Architecture v2</h1>
+<div class="sub">Added: iterative calibration loop · Judge self-critique · Physics↔ML negotiation · Orchestrator control/memory bus</div>
+
+<div class="canvas-wrap">
+<div class="canvas">
+
+  <!-- ============ SVG ARROW LAYER ============ -->
+  <svg width="1040" height="1620">
+    <defs>
+      <marker id="arrow-gray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#6b7280"/>
+      </marker>
+      <marker id="arrow-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#ea580c"/>
+      </marker>
+      <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#7c3aed"/>
+      </marker>
+      <marker id="arrow-pink" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#db2777"/>
+      </marker>
+      <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#b91c1c"/>
+      </marker>
+      <marker id="arrow-indigo" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto">
+        <path d="M0,0 L5,2.5 L0,5 Z" fill="#4338ca"/>
+      </marker>
+    </defs>
+
+    <!-- ===== Standard flow (gray) ===== -->
+    <path d="M440,84 L440,110" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <path d="M415,200 L415,225" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <path d="M407,345 L407,368" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+
+    <!-- sim layer -> physics -->
+    <path d="M260,518 C260,535 220,540 210,553" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <!-- sim layer -> ML -->
+    <path d="M560,518 C560,535 700,540 710,553" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+
+    <!-- physics -> judge -->
+    <path d="M230,675 C230,700 330,695 370,708" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <!-- ML -> judge -->
+    <path d="M690,675 C690,700 570,695 520,708" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+
+    <!-- judge -> agree -->
+    <path d="M330,850 C330,870 240,875 205,888" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <!-- judge -> calibration -->
+    <path d="M550,850 C550,870 600,875 610,888" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+
+    <!-- agree -> action agent -->
+    <path d="M200,978 L200,1150 L420,1150 L420,1168" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <!-- calibration -> engineer approval (also doubles as the "criticality check" edge) -->
+    <path d="M610,1008 L610,1038" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <!-- engineer approval -> action agent -->
+    <path d="M610,1128 L610,1150 L440,1150 L440,1168" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+    <!-- action agent -> mro -->
+    <path d="M420,1258 L420,1298" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+
+    <!-- ===== NEW #1: Default calibration loop (red, dashed) — originates at Engineer Approval, routes through the human on every re-run ===== -->
+    <path d="M782,1075 C880,1010 880,480 782,450"
+          stroke="#b91c1c" stroke-width="2.5" fill="none" stroke-dasharray="4,4"
+          marker-end="url(#arrow-red)"/>
+
+    <!-- ===== NEW #2: Judge self-critique loop (purple, dashed, small loop on box) ===== -->
+    <path d="M560,712 C610,690 610,660 555,655"
+          stroke="#7c3aed" stroke-width="2.5" fill="none" stroke-dasharray="5,4"
+          marker-end="url(#arrow-purple)"/>
+
+    <!-- ===== NEW #3: Physics <-> ML negotiation (pink, dashed, bidirectional) ===== -->
+    <path d="M362,600 L558,600" stroke="#db2777" stroke-width="2.5" fill="none" stroke-dasharray="6,4"
+          marker-end="url(#arrow-pink)"/>
+    <path d="M558,618 L362,618" stroke="#db2777" stroke-width="2.5" fill="none" stroke-dasharray="6,4"
+          marker-end="url(#arrow-pink)"/>
+
+    <!-- ===== NEW #4: Orchestrator control/memory bus (indigo, dashed) — connects Orchestrator to every AI agent, not just a single trigger ===== -->
+    <!-- stub out of Orchestrator box, left side -->
+    <path d="M80,198 L12,198" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4"/>
+    <!-- left vertical bus -->
+    <path d="M12,198 L12,614" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4"/>
+    <!-- spur into Physics Agent -->
+    <path d="M12,614 L57,614" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4" marker-end="url(#arrow-indigo)"/>
+
+    <!-- stub out of Orchestrator box, right side -->
+    <path d="M800,198 L930,198" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4"/>
+    <!-- right vertical bus (runs the full length, taps off to each agent) -->
+    <path d="M930,198 L930,1212" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4"/>
+    <!-- spur into ML Correction Agent -->
+    <path d="M930,614 L863,614" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4" marker-end="url(#arrow-indigo)"/>
+    <!-- spur into Judge Agent -->
+    <path d="M930,778 L633,778" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4" marker-end="url(#arrow-indigo)"/>
+    <!-- spur into Calibration Agent -->
+    <path d="M930,947 L783,947" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4" marker-end="url(#arrow-indigo)"/>
+    <!-- spur into Action Agent -->
+    <path d="M930,1212 L783,1212" stroke="#4338ca" stroke-width="1.8" fill="none" stroke-dasharray="3,4" marker-end="url(#arrow-indigo)"/>
+
+  </svg>
+
+  <!-- ============ BOXES ============ -->
+
+  <div class="box dashboard" style="left:190px; top:20px; width:500px; height:60px;">
+    <div class="title" style="text-align:center;">User Dashboard</div>
+    <div style="text-align:center; font-size:12px;">Fleet Health • Alerts • Explainability • Reasoning Traces</div>
+  </div>
+
+  <div class="box orchestrator" style="left:40px; top:110px; width:800px; height:88px;">
+    <div class="title">Orchestrator agent</div>
+    <div class="sub-title">Triggers cycles, holds fleet memory, plans agent sequence dynamically</div>
+    <div style="font-size:12px;">• Starts analysis cycle &nbsp;• Maintains fleet memory &nbsp;• Retrieves historical inspections &nbsp;• Coordinates all AI agents</div>
+  </div>
+
+  <div class="box ingestion" style="left:25px; top:224px; width:800px; height:118px;">
+    <div class="title" style="font-size:12.5px; letter-spacing:0.5px;">DATA INGESTION LAYER</div>
+    <div style="font-size:12px; margin-top:8px;">Sensors &nbsp;•&nbsp; Flight Logs &nbsp;•&nbsp; Inspection Reports &nbsp;•&nbsp; Maintenance Records &nbsp;•&nbsp; CAD Models</div>
+  </div>
+
+  <div class="box simlayer" style="left:25px; top:368px; width:800px; height:150px;">
+    <div class="title" style="font-size:12.5px; letter-spacing:0.5px;">DIGITAL TWIN / SIMULATION LAYER</div>
+    <div style="font-size:12px; margin-top:8px;">ANSYS &nbsp;•&nbsp; Abaqus &nbsp;•&nbsp; Creo &nbsp;•&nbsp; NASTRAN</div>
+    <div style="font-size:11.5px; margin-top:6px; opacity:0.85;">Stress Analysis • Fatigue • Crack Growth • Thermal • Structural Simulation</div>
+    <div style="font-size:10.5px; margin-top:8px; color:#b91c1c; font-weight:700;">⟳ Re-run target for the Engineer-Approval calibration loop →</div>
+  </div>
+
+  <div class="box physics" style="left:60px; top:553px; width:300px; height:122px;">
+    <div class="title">PHYSICS AGENT</div>
+    <ul style="font-size:12px;">
+      <li>Fatigue Models</li>
+      <li>Crack Growth</li>
+      <li>Failure Physics</li>
+    </ul>
+  </div>
+
+  <div class="box mlcorrect" style="left:560px; top:553px; width:300px; height:122px;">
+    <div class="title">ML CORRECTION AGENT</div>
+    <ul style="font-size:12px;">
+      <li>Random Forest</li>
+      <li>Gaussian Process</li>
+      <li>Residual Learning</li>
+    </ul>
+  </div>
+
+  <div class="box judge" style="left:250px; top:708px; width:380px; height:140px;">
+    <div class="title">JUDGE AGENT</div>
+    <ul style="font-size:12px;">
+      <li>Stress Value / Compare Predictions (HCF or LCF lifecycle)</li>
+      <li>Confidence Score • Divergence Detection</li>
+      <li>Root Cause Reasoning</li>
+    </ul>
+  </div>
+
+  <div class="box agree" style="left:60px; top:888px; width:280px; height:88px;">
+    <div class="title">AGREE / MINOR GAP</div>
+    <div style="font-size:12px;">Proceed, high confidence</div>
+  </div>
+
+  <div class="box calib" style="left:440px; top:888px; width:340px; height:118px;">
+    <div class="title">CALIBRATION AGENT</div>
+    <ul style="font-size:12px;">
+      <li>Parameter Optimization</li>
+      <li>Bayesian Calibration</li>
+      <li>Simulation Tuning</li>
+    </ul>
+  </div>
+
+  <div class="box approval" style="left:440px; top:1038px; width:340px; height:90px;">
+    <div class="title">ENGINEER APPROVAL</div>
+    <div style="font-size:12px;">Human-in-the-Loop • Explainable AI Report</div>
+  </div>
+
+  <div class="box action" style="left:60px; top:1168px; width:720px; height:88px;">
+    <div class="title">ACTION AGENT</div>
+    <div style="font-size:12px;">Continue Monitoring • Schedule Inspection • Recommend Repair • Generate Work Order</div>
+  </div>
+
+  <div class="box mro" style="left:60px; top:1298px; width:720px; height:128px;">
+    <div class="title" style="font-size:12.5px; letter-spacing:0.5px;">MRO / ERP SYSTEM</div>
+    <div style="font-size:12px; margin-top:8px;">SAP PM &nbsp;•&nbsp; IBM Maximo &nbsp;•&nbsp; AMOS &nbsp;•&nbsp; Scheduling &nbsp;•&nbsp; Logbook</div>
+  </div>
+
+  <!-- ============ EDGE LABELS ============ -->
+  <div class="edge-label" style="left:270px; top:530px;">Physics Prediction</div>
+  <div class="edge-label" style="left:590px; top:530px;">Simulation Features</div>
+
+  <!-- New feature labels -->
+  <div class="edge-label new" style="left:815px; top:690px; background:#b91c1c; transform:rotate(90deg); transform-origin:left top; white-space:nowrap;">
+    ITERATE ≤5x · engineer reviews each re-run · exit if no convergence
+  </div>
+  <div class="badge" style="left:815px; top:665px; background:#b91c1c;">i = 1..5</div>
+
+  <div class="edge-label new" style="left:565px; top:670px; background:#7c3aed; white-space:nowrap;">
+    self-critique pass
+  </div>
+
+  <div class="edge-label new" style="left:395px; top:582px; background:#db2777; white-space:nowrap;">
+    negotiate ≤2 rounds before Judge
+  </div>
+
+  <div class="edge-label new" style="left:944px; top:440px; background:#4338ca; transform:rotate(90deg); transform-origin:left top; white-space:nowrap;">
+    Orchestrator control/memory bus → context to every agent, not a one-time trigger
+  </div>
+
+  <!-- ============ LEGEND ============ -->
+  <div class="legend" style="left:60px; top:1470px; width:920px;">
+    <h3>New agentic mechanisms added in this revision</h3>
+    <div class="legend-row">
+      <div class="swatch" style="border-color:#4338ca;"></div>
+      <div><strong>Orchestrator control/memory bus (indigo)</strong> — previously the Orchestrator only fired once at the top of the cycle and had no visible link to the individual agents. It now stays connected throughout: it injects fleet-memory context into Physics, ML, Judge, Calibration, and Action agents, and each of them can report status back. Solid gray arrows are the primary data handoff between agents; this indigo bus is separate — it's coordination and context, not the analysis result itself.</div>
+    </div>
+    <div class="legend-row">
+      <div class="swatch" style="border-color:#b91c1c;"></div>
+      <div><strong>Calibration loop, gated by Engineer Approval (default for all assets)</strong> — the Calibration Agent proposes a parameter change, but every re-run of the Digital Twin / Simulation Layer is reviewed and approved by the engineer first, up to 5 rounds, until Judge confidence ≥ 95%. If it never converges, the cycle stops and is flagged for manual investigation instead of looping indefinitely. This keeps a human aware of every simulation-input change, not just the final outcome.</div>
+    </div>
+    <div class="legend-row">
+      <div class="swatch" style="border-color:#7c3aed;"></div>
+      <div><strong>Judge self-critique</strong> — before finalizing a verdict, the Judge Agent reviews its own divergence classification against the asset's criticality and historical false-alarm rate, and revises if unjustified.</div>
+    </div>
+    <div class="legend-row">
+      <div class="swatch" style="border-color:#db2777;"></div>
+      <div><strong>Physics ↔ ML negotiation</strong> — Physics Agent and ML Correction Agent exchange up to 2 rounds of reconsideration directly with each other before handing off to the Judge, narrowing disagreement early.</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
