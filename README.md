@@ -1,6 +1,9 @@
 # EIx — Engineering Intelligence
 
 **An agentic predictive-maintenance digital twin for industrial assets.**
+
+https://github.com/user-attachments/assets/83a36a5a-27f7-4859-a6ac-a1cee1121a4a
+
 CSV in → anomaly detection → physics-based fatigue prediction → ML correction →
 LLM Judge with tool-use → material-swap recommendation → engineer approval → work order.
 
