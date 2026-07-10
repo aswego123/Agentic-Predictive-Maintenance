@@ -1,4 +1,4 @@
-# EIx — Engineering Intelligence Predective M
+# EIx — Engineering Intelligence Predictive Maintenance
 
 ## Use Case: Anomaly Detection & Fatigue Intelligence for Aerospace and Rail Assets
 LangGraph multi-agent digital twin where physics and ML negotiate,
