@@ -4,8 +4,20 @@
 
 https://github.com/user-attachments/assets/83a36a5a-27f7-4859-a6ac-a1cee1121a4a
 
-CSV in → anomaly detection → physics-based fatigue prediction → ML correction →
-LLM Judge with tool-use → material-swap recommendation → engineer approval → work order.
+CSV Input → Anomaly Detection → Physics-Based Fatigue Prediction → ML Correction → LLM Judge (Tool-Use) → Material-Swap Recommendation → Engineer Approval → Work Order
+
+Raw sensor and inspection data enters as a CSV feed and is first screened for 
+anomalies to flag components showing deviation from expected behavior. Flagged 
+components are run through a physics-based fatigue prediction model to generate 
+a first-principles degradation estimate, which an ML correction layer then refines 
+against real historical outcomes — accounting for manufacturing variance, 
+environmental effects, and sensor drift that physics alone misses. The corrected 
+prediction is passed to an LLM Judge with tool-use access, which cross-examines 
+both outputs, pulls in relevant context (component history, maintenance records, 
+material specs), and surfaces a material-swap recommendation with full reasoning. 
+Nothing is auto-executed — every recommendation is routed to an engineer for 
+approval before being converted into a work order, closing the loop from raw 
+sensor data to actionable maintenance decision with a fully explainable trail.
 
 Built for the Hackathon around a LangGraph state machine (Python / FastAPI backend)
 and a React + Vite frontend that visualizes the whole pipeline as it runs.
