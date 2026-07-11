@@ -14,7 +14,7 @@ Reactive, not predictive- Threshold alarms fire only after a fault is already un
 Unplanned downtime - Emergency repairs cost 3-5x more than scheduled maintenance.
 Fragmented data - Sensor CSVs, material specs, and fatigue models live in silos.
 
-## Pipeline: CSV Input → Anomaly Detection → Physics-Based Fatigue Prediction → ML Correction → LLM Judge (Tool-Use) → Material-Swap Recommendation → Engineer Approval → Work Order
+Pipeline: CSV Input → Anomaly Detection → Physics-Based Fatigue Prediction → ML Correction → LLM Judge (Tool-Use) → Material-Swap Recommendation → Engineer Approval → Work Order
 
 Raw sensor and inspection data enters as a CSV feed and is first screened for 
 anomalies to flag components showing deviation from expected behavior. Flagged 
