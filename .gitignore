@@ -9,10 +9,12 @@ __pycache__/
 *.egg-info/
 .venv/
 
-# SQLite persistence written by the graph
-sqlite-data/*.sqlite
-sqlite-data/*.sqlite-shm
-sqlite-data/*.sqlite-wal
+# SQLite persistence written by the graph (anywhere in the repo,
+# not just sqlite-data/, so a stale process with the old path cannot
+# silently leave an untracked stub file at the repo root).
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 
 # OS / editor
 .DS_Store

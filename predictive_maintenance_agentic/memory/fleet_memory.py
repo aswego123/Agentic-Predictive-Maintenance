@@ -31,7 +31,7 @@ class FleetMemoryEntry:
 class FleetMemoryStore:
     """SQLite-backed fleet memory. Thread-safe for a single-process demo."""
 
-    def __init__(self, db_path: str = "./eix_fleet_memory.sqlite"):
+    def __init__(self, db_path: str = "./sqlite-data/eix_fleet_memory.sqlite"):
         self.db_path = db_path
         os.makedirs(os.path.dirname(os.path.abspath(db_path)) or ".", exist_ok=True)
         self._init_schema()
